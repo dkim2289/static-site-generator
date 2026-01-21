@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
+from textnode import *
 
 
 class TestTextNode(unittest.TestCase):
@@ -16,13 +16,16 @@ class TestTextNode(unittest.TestCase):
 
     def test_url_none(self):
         node = TextNode("This is a text node", TextType.BOLD, url=None)
-        node2 = TextNode("This is a text node", TextType.BOLD, url="http://www.boot.dev")
+        node2 = TextNode(
+            "This is a text node", TextType.BOLD, url="http://www.boot.dev"
+        )
         self.assertNotEqual(node, node2)
 
     def test_text_type(self):
         node = TextNode("This is a text node", TextType.BOLD)
         node2 = TextNode("This is a text node", TextType.ITALIC)
         self.assertNotEqual(node, node2)
+
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
     def test_text(self):
@@ -31,27 +34,29 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a text node")
 
-    def test_image(self):
+    def test_image1(self):
         node = TextNode("This is an image", TextType.IMAGE, "https://www.boot.dev")
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
-        self.assertEqual(html_node.props, {"src": "https://www.boot.dev", "alt": "This is an image"})
+        self.assertEqual(
+            html_node.props, {"src": "https://www.boot.dev", "alt": "This is an image"}
+        )
 
-    def test_image(self):
+    def test_image2(self):
         node = TextNode("This is bold", TextType.BOLD)
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is bold")
 
-    def test_image(self):
+    def test_image3(self):
         node = TextNode("This is bold", TextType.LINK, "dog.jpg")
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "This is bold")
-        self.assertEqual(html_node.props, {"href": "dog.jpg"})\
+        self.assertEqual(html_node.props, {"href": "dog.jpg"})
 
-class SplitDelimiter(unittest.TestCase):
+
 """
 TEST PLAN
 - bold
@@ -59,7 +64,89 @@ TEST PLAN
 - italic
 - bold and italic
 - code (block)
+- when the last word is encapsulated
 """
+
+
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_bold(self):
+        node = TextNode("testing **Bold** text", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("testing ", TextType.TEXT),
+                TextNode("Bold", TextType.BOLD),
+                TextNode(" text", TextType.TEXT),
+            ],
+            new_node,
+        )
+
+    def test_bold_double(self):
+        node = TextNode("writing **another** sentence **for** double", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("writing ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
+                TextNode(" sentence ", TextType.TEXT),
+                TextNode("for", TextType.BOLD),
+                TextNode(" double", TextType.TEXT),
+            ],
+            new_node,
+        )
+
+    def test_italic(self):
+        node = TextNode("another test, *but* this time for italic", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "*", TextType.ITALIC)
+        self.assertListEqual(
+            [
+                TextNode("another test, ", TextType.TEXT),
+                TextNode("but", TextType.ITALIC),
+                TextNode(" this time for italic", TextType.TEXT),
+            ],
+            new_node,
+        )
+
+
+    def test_bold_and_italic(self):
+        node = TextNode("this time, it's **bold** and *italic* texts", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "**", TextType.BOLD)
+        new_node = markdown_to_htmlnode(new_node, "*", TextType.ITALIC)
+        self.assertListEqual(
+            [
+                TextNode("this time, it's ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" texts", TextType.TEXT),
+            ],
+            new_node,
+        )
+
+    def test_code(self):
+        node = TextNode("lastly, it's `code` block", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "`", TextType.CODE)
+        self.assertListEqual(
+            [
+                TextNode("lastly, it's ",TextType.TEXT),
+                TextNode("code", TextType.CODE),
+                TextNode(" block", TextType.TEXT),
+            ],
+            new_node,
+        )
+
+    def test_last_word_encapsulated(self):
+        node = TextNode("very final test I **hope!**", TextType.TEXT)
+        new_node = markdown_to_htmlnode([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("very final test I ", TextType.TEXT),
+                TextNode("hope!", TextType.BOLD),
+                TextNode("", TextType.TEXT),
+            ],
+            new_node,
+        )
+
 
 """
 SELF NOTE
@@ -67,87 +154,9 @@ SELF NOTE
 - use assertListEqual (https://docs.python.org/3/library/unittest.html)
 
 - almost ran out of sparking water, almond milk, olives
-- COSTCO trip on weekend
+- Costco this weekend
 """
 
-    def test_delim_bold(self):
-        node = TextNode("This is text with a **bolded** word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertListEqual(
-            [
-                TextNode("This is text with a ", TextType.TEXT),
-                TextNode("bolded", TextType.BOLD),
-                TextNode(" word", TextType.TEXT),
-            ],
-            new_nodes,
-        )
-
-    def test_delim_bold_double(self):
-        node = TextNode(
-            "This is text with a **bolded** word and **another**", TextType.TEXT
-        )
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertListEqual(
-            [
-                TextNode("This is text with a ", TextType.TEXT),
-                TextNode("bolded", TextType.BOLD),
-                TextNode(" word and ", TextType.TEXT),
-                TextNode("another", TextType.BOLD),
-            ],
-            new_nodes,
-        )
-
-    def test_delim_bold_multiword(self):
-        node = TextNode(
-            "This is text with a **bolded word** and **another**", TextType.TEXT
-        )
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertListEqual(
-            [
-                TextNode("This is text with a ", TextType.TEXT),
-                TextNode("bolded word", TextType.BOLD),
-                TextNode(" and ", TextType.TEXT),
-                TextNode("another", TextType.BOLD),
-            ],
-            new_nodes,
-        )
-
-    def test_delim_italic(self):
-        node = TextNode("This is text with an _italic_ word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
-        self.assertListEqual(
-            [
-                TextNode("This is text with an ", TextType.TEXT),
-                TextNode("italic", TextType.ITALIC),
-                TextNode(" word", TextType.TEXT),
-            ],
-            new_nodes,
-        )
-
-    def test_delim_bold_and_italic(self):
-        node = TextNode("**bold** and _italic_", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
-        self.assertListEqual(
-            [
-                TextNode("bold", TextType.BOLD),
-                TextNode(" and ", TextType.TEXT),
-                TextNode("italic", TextType.ITALIC),
-            ],
-            new_nodes,
-        )
-
-    def test_delim_code(self):
-        node = TextNode("This is text with a `code block` word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-        self.assertListEqual(
-            [
-                TextNode("This is text with a ", TextType.TEXT),
-                TextNode("code block", TextType.CODE),
-                TextNode(" word", TextType.TEXT),
-            ],
-            new_nodes,
-        )
 
 if __name__ == "__main__":
     unittest.main()

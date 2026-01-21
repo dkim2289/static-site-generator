@@ -1,5 +1,4 @@
 from enum import Enum
-from this import d
 
 from htmlnode import LeafNode
 
@@ -47,70 +46,52 @@ def text_node_to_html_node(text_node):
 
 
 """ for PAUL
-– By Fri 14:00 pls. Thx Mate!
-– Convert Function (from a Markdown Strings to TextNodes), and
-– Test Cases, and
-– Check on Dan's codes <- (by Thurs 5pm)
+– By Fri 14:00 pls. Thx Mate! 
+V– Convert Function (from a Markdown Strings to TextNodes), and
+V– Test Cases, and
+– Check on Dan's codes <- (by Thurs 5pm), and
+– Zoom on Fri 16:00
 """
 
 """ (wink)(thumbs up)
 EDGES
-1. given node is not TextType.TEXT as-is -> adding the list as-is
-ex. node = TextNode("**blabla**", TextType.BOLD)
-2. no closing delimiter ->
-ex. node = TextNode("blablal **BLAAAA! ", TextType.BOLD)
+1. given node is not Textext_typeype.TEXT as-is -> adding the list as-is
+ex. node = TextNode("**blabla**", Textext_typeype.BOLD)
+2. no closing delimiteriter ->
+ex. node = TextNode("blablal **BLAAAA! ", Textext_typeype.BOLD)
 3. no text -> skip
-ex. node = TextNode("blabla **** blabla", TextType.BOLD)
+ex. node = TextNode("blabla **** blabla", Textext_typeype.BOLD)
 
 PSEUDO
-params = array(of TextNodes) // delimiter // test_type
-ouputs = array(of separated TextNodes)
+params = array(of TextNodes) // delimiteriter // test_type
+new_nodesuts = array(of separated TextNodes)
 
-0. oup_list = []
-1. loop the TextNodes -> check the texttype (EDGE1)
+0. new_nodes_list = []
+1. loop the TextNodes -> check the textext_typeype (EDGE1)
 2. split each node into parts
 3. identify parts -> if part numb is odd -> (EDGE2)
 4. identified parts into tmp arrays
-5. tmp arrays to oup_list
+5. tmp arrays to new_nodes_list
 """
 
-# def blabla(oldN, delim, tt):
-#     oup=[]
-#     for node in oldN:
-#         if node.text_type != TextType.TEXT:
-#             oup.append(node)
-#             continue
-#         parts =[]
-#         parted = oldN.text.split(delim)
-#         if len(parted) % 2 == 0:
-#             raise Exception("Invalid Syntax")
-#         for i in range(len(parted)):
-#             if parted[i]=="":
-#                 continue
-#             if i % 2 == 0:
-#                 parts.append(TextNode(parted[i],TextType.TEXT)
-#             else:
-#                 parts.append(TextNode(parted[i],tt))
-#         oup.extend(parts)
-#     return oup
-
-
-def split_nodes_delimiter(old_nodes, delimiter, text_type):
+def markdown_to_htmlnode(old_nodes, delimiter, text_type):
     new_nodes = []
-    for old_node in old_nodes:
-        if old_node.text_type != TextType.TEXT:
-            new_nodes.append(old_node)
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT: # EDGE 1
+            new_nodes.append(node)
             continue
-        split_nodes = []
-        sections = old_node.text.split(delimiter)
-        if len(sections) % 2 == 0:
-            raise Exception("Invalid Markdown Syntax")
-        for i in range(len(sections)):
-            if sections[i] == "":
-                continue
+
+        splitted_sections = []
+        splitting = node.text.split(delimiter)
+
+        if len(splitting) % 2 == 0: # EDGE 2
+            raise Exception("Invalid Syntax -> Check delimiteriters")
+
+        for i in range(len(splitting)):
             if i % 2 == 0:
-                split_nodes.append(TextNode(sections[i], TextType.TEXT))
+                splitted_sections.append(TextNode(splitting[i],TextType.TEXT))
             else:
-                split_nodes.append(TextNode(sections[i], text_type))
-        new_nodes.extend(split_nodes)
+                splitted_sections.append(TextNode(splitting[i],text_type))
+        new_nodes.extend(splitted_sections)
+
     return new_nodes
