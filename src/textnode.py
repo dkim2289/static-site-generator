@@ -1,7 +1,7 @@
 from enum import Enum
 
 from htmlnode import LeafNode
-
+import re
 
 class TextType(Enum):
     TEXT = "text"
@@ -46,7 +46,7 @@ def text_node_to_html_node(text_node):
 
 
 """ for PAUL
-– By Fri 14:00 pls. Thx Mate! 
+– By Fri 14:00 pls. Thx Mate!
 – Convert Function (from a Markdown Strings to TextNodes), and
 – Test Cases, and
 – Check on Dan's codes <- (by Thurs 5pm), and
@@ -74,24 +74,32 @@ new_nodesuts = array(of separated TextNodes)
 5. tmp arrays to new_nodes_list
 """
 
-def markdown_to_htmlnode(old_nodes, delimiter, text_type):
-    new_nodes = []
-    for node in old_nodes:
-        if node.text_type != TextType.TEXT: # EDGE 1
-            new_nodes.append(node)
-            continue
+"""for DAN
+– By Thurs 5pm pls. thx!
+– Comment your EDGES and PSEUDO notes right below this.
+– do Extract Functions (one for Images and one for Links)
+– Test Cases, and
+– Scrum at Fri 16:00
+"""
 
-        splitted_sections = []
-        splitting = node.text.split(delimiter)
+"""
+EDGES
+1. two dots -> https://www.blabla.com.au
 
-        if len(splitting) % 2 == 0: # EDGE 2
-            raise Exception("Invalid Syntax -> Check delimiteriters")
+PSEUDO
+inp-img = test (strings) -> ex. "blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"
+inp-lin = text (strings) -> ex. "blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"
+oup = list of tuples -> [ (a,b) , (c,d) ] using regex
 
-        for i in range(len(splitting)):
-            if i % 2 == 0:
-                splitted_sections.append(TextNode(splitting[i],TextType.TEXT))
-            else:
-                splitted_sections.append(TextNode(splitting[i],text_type))
-        new_nodes.extend(splitted_sections)
+0. import re
+0. re.findall(a,b) -> a : regex / b : text
+1. regex, regex, regex.
+"""
 
-    return new_nodes
+# Paul
+def extract_markdown_images(text):
+    return re.findall(r"!\[(.*?)\]\((.*?)\)",text)
+
+# Paul
+def extract_markdown_links(text):
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
