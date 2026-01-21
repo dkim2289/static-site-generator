@@ -47,10 +47,10 @@ def text_node_to_html_node(text_node):
 
 """ for PAUL
 – By Fri 14:00 pls. Thx Mate! 
-V– Convert Function (from a Markdown Strings to TextNodes), and
-V– Test Cases, and
+– Convert Function (from a Markdown Strings to TextNodes), and
+– Test Cases, and
 – Check on Dan's codes <- (by Thurs 5pm), and
-– Zoom on Fri 16:00
+– Scrum at Fri 16:00
 """
 
 """ (wink)(thumbs up)
