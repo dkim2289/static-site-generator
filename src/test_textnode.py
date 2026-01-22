@@ -211,7 +211,7 @@ class TestMarkdownImages(unittest.TestCase):
             ],
             match
         )
-        
+# Paul
 class TestImgExtractionThenSeparation(unittest.TestCase):
     def test_basic_two_parts(self):
         node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg)",TextType.TEXT)
@@ -223,7 +223,7 @@ class TestImgExtractionThenSeparation(unittest.TestCase):
             ],
             new_node
         )
-        
+
     def test_basic_three_parts(self):
         node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg) and there's more texts",TextType.TEXT)
         new_node = split_nodes_image([node])
@@ -235,7 +235,7 @@ class TestImgExtractionThenSeparation(unittest.TestCase):
             ],
             new_node
         )
-        
+
     def test_two_images(self):
         node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg) and there's more texts ![look](src/img/one_more_img.jpg)and there's more texts here",TextType.TEXT)
         new_node = split_nodes_image([node])
@@ -249,9 +249,46 @@ class TestImgExtractionThenSeparation(unittest.TestCase):
             ],
             new_node
         )
-    
-    
-        
+
+# Paul
+class TestLinkExtractionThenSeparation(unittest.TestCase):
+    def test_basic_two_parts(self):
+        node = TextNode("A photo of a dog! [dog](https://www.link.com)",TextType.TEXT)
+        new_node = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.LINK,"https://www.link.com"),
+            ],
+            new_node
+        )
+
+    def test_basic_three_parts(self):
+        node = TextNode("A photo of a dog! [dog](https://www.link.com) hehehe",TextType.TEXT)
+        new_node = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.LINK,"https://www.link.com"),
+                TextNode(" hehehe",TextType.TEXT),
+            ],
+            new_node
+        )
+
+    def test_two_links(self):
+        node = TextNode("A photo of a dog! [dog](https://www.link.com) hehehe [linktwo](www.another.com)",TextType.TEXT)
+        new_node = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.LINK,"https://www.link.com"),
+                TextNode(" hehehe ",TextType.TEXT),
+                TextNode("linktwo",TextType.LINK,"www.another.com"),
+            ],
+            new_node
+        )
+
+
 
 if __name__ == "__main__":
     unittest.main()

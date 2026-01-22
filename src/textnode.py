@@ -151,13 +151,13 @@ def split_nodes_image(old_nodes):
         if old_node.text_type != TextType.TEXT:
             new_array.append(old_node)
             continue
-        
+
         the_text = old_node.text
         images = extract_markdown_images(the_text)
-        
+
         if len(images) == 0:
             new_array.append(old_node)
-        
+
         for image in images:
             text_splitted = the_text.split(f"![{image[0]}]({image[1]})",1)
             if len(text_splitted) != 2:
@@ -178,4 +178,33 @@ def split_nodes_image(old_nodes):
 
 
 def split_nodes_link(old_nodes):
-    pass
+    new_array = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_array.append(old_node)
+            continue
+
+        text = old_node.text
+        links = extract_markdown_links(text)
+
+        if len(links) == 0:
+            new_array.append(old_node)
+
+        for link in links:
+            text_splitted = text.split(f"[{link[0]}]({link[1]})",1)
+            if len(text_splitted) != 2:
+                raise Exception("Invalid Syntax: Check out for the closing brackets")
+            if text_splitted[0] != "":
+                new_array.append(TextNode(text_splitted[0],TextType.TEXT))
+            new_array.append(
+                TextNode(
+                    link[0],
+                    TextType.LINK,
+                    link[1]
+                )
+            )
+            text = text_splitted[1]
+        if text != "":
+            new_array.append(TextNode(text,TextType.TEXT))
+
+    return new_array
