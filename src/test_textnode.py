@@ -68,13 +68,96 @@ TEST PLAN
 """
 """
 SELF NOTE
-- imports done
+- import done
 - use assertListEqual (https://docs.python.org/3/library/unittest.html)
 
 - almost ran out of sparking water, almond milk, olives
 - Costco this weekend
 """
+# Paul
+class MarkdownToHTMLNode(unittest.TestCase):
+    def test_bold(self):
+        node = TextNode("testing ** bold ** texts",TextType.TEXT)
+        new_nodes = markdown_to_htmlnode([node],"**",TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("testing ", TextType.TEXT),
+                TextNode(" bold ", TextType.BOLD),
+                TextNode(" texts", TextType.TEXT),
+            ],
+            new_nodes
+        )
 
+    def test_bold_double(self):
+        def test_double_bolds(self):
+            node = TextNode("testing ** double ** bold ** texts ** now.",TextType.TEXT)
+            new_nodes = markdown_to_htmlnode([node],"**",TextType.BOLD)
+            self.assertListEqual(
+                [
+                    TextNode("testing ", TextType.TEXT),
+                    TextNode(" double ", TextType.BOLD),
+                    TextNode("  bold ", TextType.TEXT),
+                    TextNode(" texts ", TextType.BOLD),
+                    TextNode(" now.", TextType.TEXT),
+                ],
+                new_nodes
+            )
+
+    def test_italic(self):
+        def test_italic(self):
+            node = TextNode("testing ** italic ** texts",TextType.TEXT)
+            new_nodes = markdown_to_htmlnode([node],"*",TextType.ITALIC)
+            self.assertListEqual(
+                [
+                    TextNode("testing ", TextType.TEXT),
+                    TextNode(" italic ", TextType.ITALIC),
+                    TextNode(" texts", TextType.TEXT),
+                ],
+                new_nodes
+            )
+            
+    def test_bold_and_italic(self):
+        def test_bold_and_italic(self):
+            node = TextNode("testing ** both ** bold * and * italic fonts",TextType.TEXT)
+            new_nodes = markdown_to_htmlnode([node],"**",TextType.BOLD)
+            new_nodes = markdown_to_htmlnode([new_nodes],"*",TextType.ITALIC)
+            self.assertListEqual(
+                [
+                    TextNode("testing ", TextType.TEXT),
+                    TextNode(" both ", TextType.BOLD),
+                    TextNode(" bold ", TextType.TEXT),
+                    TextNode(" and ", TextType.ITALIC),
+                    TextNode(" italic fonts ", TextType.TEXT),
+                ],
+                new_nodes
+            )
+            
+    def test_code(self):
+        def test_code(self):
+            node = TextNode("testing ` code ` texts",TextType.TEXT)
+            new_nodes = markdown_to_htmlnode([node],"`",TextType.CODE)
+            self.assertListEqual(
+                [
+                    TextNode("testing ", TextType.TEXT),
+                    TextNode(" code ", TextType.CODE),
+                    TextNode(" texts", TextType.TEXT),
+                ],
+                new_nodes
+            )
+        
+        
+    def test_last_word(self):
+        def test_last_word(self):
+            node = TextNode("testing last ** words **",TextType.TEXT)
+            new_nodes = markdown_to_htmlnode([node],"**",TextType.BOLD)
+            self.assertListEqual(
+                [
+                    TextNode("testing last ", TextType.TEXT),
+                    TextNode(" words ", TextType.BOLD),
+                    TextNode("", TextType.TEXT),
+                ],
+                new_nodes
+            )
 
 # Paul
 class TestMarkdownImages(unittest.TestCase):

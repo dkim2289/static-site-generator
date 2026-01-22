@@ -45,7 +45,8 @@ def text_node_to_html_node(text_node):
     raise Exception("Not a valid text type")
 
 
-""" for PAUL
+"""
+for PAUL
 – By Fri 14:00 pls. Thx Mate!
 – Convert Function (from a Markdown Strings to TextNodes), and
 – Test Cases, and
@@ -61,11 +62,9 @@ ex. node = TextNode("**blabla**", Textext_typeype.BOLD)
 ex. node = TextNode("blablal **BLAAAA! ", Textext_typeype.BOLD)
 3. no text -> skip
 ex. node = TextNode("blabla **** blabla", Textext_typeype.BOLD)
-
 PSEUDO
-params = array(of TextNodes) // delimiteriter // test_type
-new_nodesuts = array(of separated TextNodes)
-
+inp = array(of TextNodes) // delimiteriter // test_type
+oup = array(of separated TextNodes)
 0. new_nodes_list = []
 1. loop the TextNodes -> check the textext_typeype (EDGE1)
 2. split each node into parts
@@ -73,6 +72,35 @@ new_nodesuts = array(of separated TextNodes)
 4. identified parts into tmp arrays
 5. tmp arrays to new_nodes_list
 """
+
+# Paul
+def markdown_to_htmlnode(old_nodes, delimiter, text_type):
+    new_array = []
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_array.append(old_node)
+            continue
+
+        tmp_list = []
+        splitted_old_nodes = old_node.text.split(delimiter)
+
+        if len(splitted_old_nodes) % 2 == 0:  # Because then this means
+            raise Exception("Invalid Syntax: Check the delimiter")
+
+        for i in range(len(splitted_old_nodes)):
+            if splitted_old_nodes[i] == "":
+                continue
+            if i % 2 == 0:
+                tmp_list.append(TextNode(splitted_old_nodes[i], TextType.TEXT))
+            else:
+                tmp_list.append(TextNode(splitted_old_nodes[i], text_type))
+
+        new_array.extend(tmp_list)
+
+    return new_array
+
+
 
 """for DAN
 – By Thurs 5pm pls. thx!
