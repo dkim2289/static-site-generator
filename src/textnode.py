@@ -45,38 +45,9 @@ def text_node_to_html_node(text_node):
     raise Exception("Not a valid text type")
 
 
-"""
-for PAUL
-– By Fri 14:00 pls. Thx Mate!
-– Convert Function (from a Markdown Strings to TextNodes), and
-– Test Cases, and
-– Check on Dan's codes <- (by Thurs 5pm), and
-– Scrum at Fri 16:00
-"""
-
-""" (wink)(thumbs up)
-EDGES
-1. given node is not Textext_typeype.TEXT as-is -> adding the list as-is
-ex. node = TextNode("**blabla**", Textext_typeype.BOLD)
-2. no closing delimiteriter ->
-ex. node = TextNode("blablal **BLAAAA! ", Textext_typeype.BOLD)
-3. no text -> skip
-ex. node = TextNode("blabla **** blabla", Textext_typeype.BOLD)
-PSEUDO
-inp = array(of TextNodes) // delimiteriter // test_type
-oup = array(of separated TextNodes)
-0. new_nodes_list = []
-1. loop the TextNodes -> check the textext_typeype (EDGE1)
-2. split each node into parts
-3. identify parts -> if part numb is odd -> (EDGE2)
-4. identified parts into tmp arrays
-5. tmp arrays to new_nodes_list
-"""
-
 # Paul
 def markdown_to_htmlnode(old_nodes, delimiter, text_type):
     new_array = []
-
     for old_node in old_nodes:
         if old_node.text_type != TextType.TEXT:
             new_array.append(old_node)
@@ -100,51 +71,14 @@ def markdown_to_htmlnode(old_nodes, delimiter, text_type):
 
     return new_array
 
-
-
-"""for DAN
-– By Thurs 5pm pls. thx!
-– Comment your EDGES and PSEUDO notes right below this.
-– do Extract Functions (one for Images and one for Links)
-– Test Cases, and
-– Scrum at Fri 16:00
-"""
-
-"""
-EDGES
-1. two dots -> https://www.blabla.com.au
-2. mixed markdown strings -> There are both an image and a link in the string
-PSEUDO
-inp-imges = test (strings) -> ex. "blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"
-inp-links = text (strings) -> ex. "blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"
-oup = list of tuples -> [ (a,b) , (c,d) ] using regex
-0. import re
-0. re.findall(a,b) -> a : regex / b : text
-1. regex, regex, regex.
-extract_markdown_images and extract_markdown_links
-"""
-
 # Paul
-"""blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"""
 def extract_markdown_images(text):
     return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
-"""blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"""
 def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)",text)
 
 
-"""
-Making two more functions that will separate the image and link to cover the EDGE2
-inp = array(of TextNodes)
-oup = array(of separated TextNodes)
-0. new_nodes_list = []
-1. loop the TextNodes -> check the text_type (EDGE1)
-2. split each node into parts
-3. identify parts -> if part numb is odd -> (EDGE2)
-4. identified parts into tmp arrays
-5. tmp arrays to new_nodes_list
-"""
 def split_nodes_image(old_nodes):
     new_array = []
     for old_node in old_nodes:
@@ -157,6 +91,7 @@ def split_nodes_image(old_nodes):
 
         if len(images) == 0:
             new_array.append(old_node)
+            continue
 
         for image in images:
             text_splitted = the_text.split(f"![{image[0]}]({image[1]})",1)
@@ -189,6 +124,7 @@ def split_nodes_link(old_nodes):
 
         if len(links) == 0:
             new_array.append(old_node)
+            continue
 
         for link in links:
             text_splitted = text.split(f"[{link[0]}]({link[1]})",1)
@@ -208,3 +144,12 @@ def split_nodes_link(old_nodes):
             new_array.append(TextNode(text,TextType.TEXT))
 
     return new_array
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = markdown_to_htmlnode(nodes, "**", TextType.BOLD)
+    nodes = markdown_to_htmlnode(nodes, "_", TextType.ITALIC)
+    nodes = markdown_to_htmlnode(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes

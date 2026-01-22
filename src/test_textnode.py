@@ -1,18 +1,6 @@
 import unittest
 
-from textnode import (
-    TextType,
-    TextNode,
-
-    text_node_to_html_node,
-    markdown_to_htmlnode,
-
-    extract_markdown_images,
-    extract_markdown_links,
-
-    split_nodes_image,
-    split_nodes_link,
-)
+from textnode import *
 
 
 class TestTextNode(unittest.TestCase):
@@ -67,25 +55,6 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "This is bold")
         self.assertEqual(html_node.props, {"href": "dog.jpg"})
-
-
-"""
-TEST PLAN
-- bold
-- bold double
-- italic
-- bold and italic
-- code (block)
-- when the last word is encapsulated
-"""
-"""
-SELF NOTE
-- import done
-- use assertListEqual (https://docs.python.org/3/library/unittest.html)
-
-- almost ran out of sparking water, almond milk, olives
-- Costco this weekend
-"""
 
 # Paul
 class MarkdownToHTMLNode(unittest.TestCase):
@@ -287,6 +256,28 @@ class TestLinkExtractionThenSeparation(unittest.TestCase):
             ],
             new_node
         )
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes(
+            "This is **text** with an _italic_ word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        )
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            nodes,
+        )
+
 
 
 
