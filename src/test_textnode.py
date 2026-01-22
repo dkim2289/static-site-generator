@@ -115,7 +115,7 @@ class MarkdownToHTMLNode(unittest.TestCase):
                 ],
                 new_nodes
             )
-            
+
     def test_bold_and_italic(self):
         def test_bold_and_italic(self):
             node = TextNode("testing ** both ** bold * and * italic fonts",TextType.TEXT)
@@ -131,7 +131,7 @@ class MarkdownToHTMLNode(unittest.TestCase):
                 ],
                 new_nodes
             )
-            
+
     def test_code(self):
         def test_code(self):
             node = TextNode("testing ` code ` texts",TextType.TEXT)
@@ -144,8 +144,8 @@ class MarkdownToHTMLNode(unittest.TestCase):
                 ],
                 new_nodes
             )
-        
-        
+
+
     def test_last_word(self):
         def test_last_word(self):
             node = TextNode("testing last ** words **",TextType.TEXT)
@@ -170,19 +170,37 @@ class TestMarkdownImages(unittest.TestCase):
             match,
         )
 
-# Paul
-class TestMarkdownLinks(unittest.TestCase):
-    def test_extract_markdown_links(self):
-        match = extract_markdown_links(
-            "This is text with a link [to example](https://www.boot.dev) and [to YouTube](https://www.youtube.com)"
-        )
+    def test_double_image_extraction(self):
+        match = extract_markdown_images("testing for double image extraction ![example1](firstimage.jpg) and here's the second ![example2](secondiamge.jpg)")
         self.assertListEqual(
             [
-                ("to example", "https://www.boot.dev"),
-                ("to YouTube", "https://www.youtube.com")
+                ("example1","firstimage.jpg"),
+                ("example2","secondiamge.jpg"),
             ],
-            match,
+            match
         )
+
+    def test_extract_markdown_links(self):
+        match = extract_markdown_links("texting link extraction [here we go](https://www.hereisthelink.com)")
+        self.assertListEqual(
+            [
+                ("here we go", "https://www.hereisthelink.com"),
+            ],
+            match
+        )
+
+    def test_double_link_extraction(self):
+        match = extract_markdown_links("testing double link extraction [example1](https://www.example1.com) and here's the second [example2](https://www.example2.com)")
+        self.assertListEqual(
+            [
+                ("example1","https://www.example1.com"),
+                ("example2","https://www.example2.com"),
+            ],
+            match
+        )
+
+    def test_double_mix_extraction(self):
+        match = extract_markdown_images("testing extactions for both images and links ![]")
 
 
 

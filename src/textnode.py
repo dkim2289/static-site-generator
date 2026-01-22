@@ -113,21 +113,21 @@ def markdown_to_htmlnode(old_nodes, delimiter, text_type):
 """
 EDGES
 1. two dots -> https://www.blabla.com.au
-
 PSEUDO
-inp-img = test (strings) -> ex. "blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"
-inp-lin = text (strings) -> ex. "blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"
+inp-imges = test (strings) -> ex. "blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"
+inp-links = text (strings) -> ex. "blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"
 oup = list of tuples -> [ (a,b) , (c,d) ] using regex
-
 0. import re
 0. re.findall(a,b) -> a : regex / b : text
 1. regex, regex, regex.
+extract_markdown_images and extract_markdown_links
 """
 
 # Paul
+"""blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"""
 def extract_markdown_images(text):
-    return re.findall(r"!\[(.*?)\]\((.*?)\)",text)
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
-# Paul
+"""blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"""
 def extract_markdown_links(text):
-    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return re.findall(r"\[(.*?)\]\((.*?)\)",text)
