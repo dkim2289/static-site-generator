@@ -113,6 +113,7 @@ def markdown_to_htmlnode(old_nodes, delimiter, text_type):
 """
 EDGES
 1. two dots -> https://www.blabla.com.au
+2. mixed markdown strings -> There are both an image and a link in the string
 PSEUDO
 inp-imges = test (strings) -> ex. "blabla ![mhm](https://mhmhmhm.com) blabla ![babidi](https://bidibu.com)"
 inp-links = text (strings) -> ex. "blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"
@@ -131,3 +132,50 @@ def extract_markdown_images(text):
 """blabla [ohyeah](https://ohyeah.com) and [aww](https://aww.com)"""
 def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)",text)
+
+
+"""
+Making two more functions that will separate the image and link to cover the EDGE2
+inp = array(of TextNodes)
+oup = array(of separated TextNodes)
+0. new_nodes_list = []
+1. loop the TextNodes -> check the text_type (EDGE1)
+2. split each node into parts
+3. identify parts -> if part numb is odd -> (EDGE2)
+4. identified parts into tmp arrays
+5. tmp arrays to new_nodes_list
+"""
+def split_nodes_image(old_nodes):
+    new_array = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_array.append(old_node)
+            continue
+        
+        the_text = old_node.text
+        images = extract_markdown_images(the_text)
+        
+        if len(images) == 0:
+            new_array.append(old_node)
+        
+        for image in images:
+            text_splitted = the_text.split(f"![{image[0]}]({image[1]})",1)
+            if len(text_splitted) != 2:
+                raise Exception("Invalid Syntax: Check out for the closing brackets")
+            if text_splitted[0] != "":
+                new_array.append(TextNode(text_splitted[0], TextType.TEXT))
+            new_array.append(
+                TextNode(
+                    image[0],
+                    TextType.IMAGE,
+                    image[1]
+                )
+            )
+            the_text = text_splitted[1]
+        if the_text != "":
+            new_array.append(TextNode(the_text,TextType.TEXT))
+    return new_array
+
+
+def split_nodes_link(old_nodes):
+    pass

@@ -1,6 +1,18 @@
 import unittest
 
-from textnode import *
+from textnode import (
+    TextType,
+    TextNode,
+
+    text_node_to_html_node,
+    markdown_to_htmlnode,
+
+    extract_markdown_images,
+    extract_markdown_links,
+
+    split_nodes_image,
+    split_nodes_link,
+)
 
 
 class TestTextNode(unittest.TestCase):
@@ -74,6 +86,7 @@ SELF NOTE
 - almost ran out of sparking water, almond milk, olives
 - Costco this weekend
 """
+
 # Paul
 class MarkdownToHTMLNode(unittest.TestCase):
     def test_bold(self):
@@ -198,12 +211,47 @@ class TestMarkdownImages(unittest.TestCase):
             ],
             match
         )
-
-    def test_double_mix_extraction(self):
-        match = extract_markdown_images("testing extactions for both images and links ![]")
-
-
-
+        
+class TestImgExtractionThenSeparation(unittest.TestCase):
+    def test_basic_two_parts(self):
+        node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg)",TextType.TEXT)
+        new_node = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.IMAGE,"src/img/lovely_dog.jpg"),
+            ],
+            new_node
+        )
+        
+    def test_basic_three_parts(self):
+        node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg) and there's more texts",TextType.TEXT)
+        new_node = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.IMAGE,"src/img/lovely_dog.jpg"),
+                TextNode(" and there's more texts",TextType.TEXT),
+            ],
+            new_node
+        )
+        
+    def test_two_images(self):
+        node = TextNode("A photo of a dog! ![dog](src/img/lovely_dog.jpg) and there's more texts ![look](src/img/one_more_img.jpg)and there's more texts here",TextType.TEXT)
+        new_node = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("A photo of a dog! ",TextType.TEXT),
+                TextNode("dog",TextType.IMAGE,"src/img/lovely_dog.jpg"),
+                TextNode(" and there's more texts ",TextType.TEXT),
+                TextNode("look",TextType.IMAGE,"src/img/one_more_img.jpg"),
+                TextNode("and there's more texts here",TextType.TEXT)
+            ],
+            new_node
+        )
+    
+    
+        
 
 if __name__ == "__main__":
     unittest.main()
