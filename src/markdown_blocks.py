@@ -5,7 +5,6 @@ from textnode import text_node_to_html_node, TextNode, TextType
 from htmlnode import ParentNode
 import os
 
-
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
     HEADING = "heading"
@@ -171,9 +170,8 @@ def extract_title(markdown):
     # after loop, nothing's returned, raise an error
     raise Exception("Error: The line should start with '#")
 
-
 # This function generates a page. It takes a markdown file, a template file, and a destination path as input.
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     # print a msg of what it does
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     # read the markdown file
@@ -190,6 +188,12 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(content)
     # replace the placeholder in the template with the title and html
     output = template.replace("{{ Title }}", title).replace("{{ Content }}", html_content)
+
+    ## replace any instances of 1) href="/ with href="{basepath}
+    output = output.replace('href="/', f'href="{basepath}')
+    ## 2) src="/ with src="{basepath}
+    output = output.replace('src="/', f'src="{basepath}')
+
     # Be sure to create any necessary directories if they don't exist
     dirpath = os.path.dirname(dest_path)
     if dirpath and not os.path.exists(dirpath):
@@ -204,7 +208,7 @@ def generate_page(from_path, template_path, dest_path):
 # os.path.join() -> only works for full paths
 # os.path.isfile() -> only works for full paths
 # pathlib.Path
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # get every entries
     entries = os.listdir(dir_path_content)
     # for each entry
@@ -217,7 +221,8 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             generate_page(
                 full_path,
                 template_path,
-                os.path.join(dest_dir_path, entry.replace(".md", ".html"))
+                os.path.join(dest_dir_path, entry.replace(".md", ".html")),
+                basepath
             )
         # if entry is a dir
         elif os.path.isdir(full_path):
@@ -225,5 +230,6 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             generate_pages_recursive(
                 full_path,
                 template_path,
-                os.path.join(dest_dir_path, entry)
+                os.path.join(dest_dir_path, entry),
+                basepath
             )
