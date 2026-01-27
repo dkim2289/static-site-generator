@@ -4,6 +4,7 @@ from markdown_blocks import (
     block_to_block_type,
     BlockType,
     markdown_to_html_node,
+    extract_title
 )
 
 
@@ -110,6 +111,26 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
                 "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
             )
 
+def test_extract_title1(self):
+    md = """
+    # This is a title
+    """
+    title = extract_title(md)
+    self.assertEqual(title, "This is a title")
+
+def test_extract_title2(self):
+    md = """
+     # This is a title
+    """
+    title = extract_title(md)
+    self.assertEqual(title, "This is a title")
+    
+def test_extract_title3(self):
+    md = """
+    ## This is a title
+    """
+    title = extract_title(md)
+    self.assertEqual(title, "Error: The line should start with '#")
 
 if __name__ == "__main__":
     unittest.main()
