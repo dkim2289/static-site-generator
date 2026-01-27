@@ -16,7 +16,7 @@ basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
 # static dir filepath
 dir_path_static = "./static"
 # public dir filepath
-dir_path_public = "./public"
+dir_path_public = "./docs"
 
 
 
